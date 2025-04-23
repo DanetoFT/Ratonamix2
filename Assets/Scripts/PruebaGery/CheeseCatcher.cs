@@ -13,6 +13,7 @@ public class CheeseCatcher : MonoBehaviour
 
     private Dictionary<GameObject, Coroutine> activeCoroutines = new Dictionary<GameObject, Coroutine>();// los diccionarios sirven como en este caso para poder saber si se esta procesando  y  asi poder cancelar la corrutina
     private Dictionary<GameObject, int> currentSpriteIndices = new Dictionary<GameObject, int>(); // sirve para poder guardar los cambios del queso y asi si se cancela y se saca poder guadra en el punto que se quedo y poder retomarlo
+    private Dictionary<GameObject, float> originalDampings = new Dictionary<GameObject, float>();
 
     public bool IsProcessing (GameObject queso) // devuelve el queso si esta en proceso
     {
@@ -30,6 +31,15 @@ public class CheeseCatcher : MonoBehaviour
             Coroutine coroutine = StartCoroutine(AcopleQueso(other.gameObject, startIndex));
             activeCoroutines.Add(other.gameObject, coroutine);
         }
+        Rigidbody2D rb = other.GetComponent<Rigidbody2D>();
+        if (rb!= null)
+        {
+            if (!originalDampings.ContainsKey(other.gameObject))//guarda el valor original del drag o damping
+            {
+                originalDampings[other.gameObject] = rb.linearDamping;
+            }
+            rb.linearDamping = 50f;//valor que de ralentizar
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other) // sirve para parpar el porceso cudo salga
@@ -37,7 +47,7 @@ public class CheeseCatcher : MonoBehaviour
         var queso = other.gameObject.GetComponent<Queso>();
         if (queso != null && activeCoroutines.ContainsKey(other.gameObject))
         {
-            StopProcessingQueso(other.gameObject);
+            StopProcessingQueso(other.gameObject); 
         }
     }
 
@@ -58,18 +68,27 @@ public class CheeseCatcher : MonoBehaviour
                 }
             }
         }
+        Rigidbody2D rb = queso.GetComponent<Rigidbody2D>();
+        if (rb != null && originalDampings.ContainsKey(queso)) //vuelve el valor orignal del drag a 0
+        {
+            rb.linearDamping = originalDampings[queso];
+            originalDampings.Remove(queso);//elimina el quso del diccionario
+        }
     }
 
     IEnumerator AcopleQueso(GameObject queso, int startIndex)
     {
         Rigidbody2D rb = queso.GetComponent<Rigidbody2D>();
-        float originalDrag = 0;
         if (rb != null)
         {
-            rb.linearVelocity = Vector2.zero; //detiene su movimiento
-            rb.linearDamping = 50f;
+            if (!originalDampings.ContainsKey(queso))
+            {
+                originalDampings[queso] = rb.linearDamping;
+            }
+            rb.linearVelocity = Vector2.zero;
+            rb.linearDamping = 50f;//srivve para ralentizar cuan
         }
-            
+
 
         queso.transform.position = cheeseHoldPoint.position; //mueve a un punto x
         queso.transform.SetParent(cheeseHoldPoint);
@@ -105,14 +124,15 @@ public class CheeseCatcher : MonoBehaviour
 
           
             currentSpriteIndices.Remove(queso);
+            if (originalDampings.ContainsKey(queso))
+            {
+                originalDampings.Remove(queso);
+            }
             Destroy(queso);
             //lo destruye y lo saca del diccionario
            
         }
-        if (rb != null)
-        {
-            rb.linearDamping = originalDrag;// restaura el orinal drag porque es para ralentizar
-        }
+        
         activeCoroutines.Remove(queso);
     }
 }
