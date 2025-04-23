@@ -19,9 +19,12 @@ public class Ratoncillo : MonoBehaviour
 
     public float rotationSpeed;
 
+    public bool canRotate;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        canRotate = true;
         rb = GetComponent<Rigidbody2D>();
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
@@ -37,7 +40,10 @@ public class Ratoncillo : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Rotation();
+        if (canRotate)
+        {
+            Rotation();
+        }
     }
 
     void Rotation()

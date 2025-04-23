@@ -11,8 +11,15 @@ public class CheeseCatcher : MonoBehaviour
     public GameObject particuleSystem;
     public float dragResistance = 0.5f;
 
+    Ratoncillo raton;
+
     private Dictionary<GameObject, Coroutine> activeCoroutines = new Dictionary<GameObject, Coroutine>();
     private Dictionary<GameObject, int> currentSpriteIndices = new Dictionary<GameObject, int>(); // Nuevo: Guarda el índice actual
+
+    private void Start()
+    {
+        raton = FindFirstObjectByType<Ratoncillo>();
+    }
 
     public bool IsProcessing (GameObject queso)
     {
@@ -21,6 +28,7 @@ public class CheeseCatcher : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        raton.canRotate = false;
         var queso = other.gameObject.GetComponent<Queso>();
         if (queso != null && !activeCoroutines.ContainsKey(other.gameObject))
         {
@@ -34,6 +42,7 @@ public class CheeseCatcher : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
+        raton.canRotate = true;
         var queso = other.gameObject.GetComponent<Queso>();
         if (queso != null && activeCoroutines.ContainsKey(other.gameObject))
         {
@@ -69,10 +78,10 @@ public class CheeseCatcher : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
             rb.linearDamping = 50f;
         }
-            
 
-        queso.transform.position = cheeseHoldPoint.position;
-        queso.transform.SetParent(cheeseHoldPoint);
+        //transform.position = queso.transform.position;
+        //queso.transform.position = cheeseHoldPoint.position;
+        //queso.transform.SetParent(cheeseHoldPoint);
 
         SpriteRenderer Sr = queso.GetComponent<SpriteRenderer>();
         if (Sr != null && cheeseSprites.Length > 0)
