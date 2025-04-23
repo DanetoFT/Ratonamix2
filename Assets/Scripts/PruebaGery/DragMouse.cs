@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class DragMouse : MonoBehaviour
 {
-    public float force = 500f;
+    public float force;
     public LayerMask draggable;
     private Rigidbody2D Rb;
     private CheeseCatcher catcher;
