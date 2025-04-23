@@ -11,10 +11,10 @@ public class CheeseCatcher : MonoBehaviour
     public GameObject particuleSystem;
     public float dragResistance = 0.5f;
 
-    private Dictionary<GameObject, Coroutine> activeCoroutines = new Dictionary<GameObject, Coroutine>();
-    private Dictionary<GameObject, int> currentSpriteIndices = new Dictionary<GameObject, int>(); // Nuevo: Guarda el índice actual
+    private Dictionary<GameObject, Coroutine> activeCoroutines = new Dictionary<GameObject, Coroutine>();// los diccionarios sirven como en este caso para poder saber si se esta procesando  y  asi poder cancelar la corrutina
+    private Dictionary<GameObject, int> currentSpriteIndices = new Dictionary<GameObject, int>(); // sirve para poder guardar los cambios del queso y asi si se cancela y se saca poder guadra en el punto que se quedo y poder retomarlo
 
-    public bool IsProcessing (GameObject queso)
+    public bool IsProcessing (GameObject queso) // devuelve el queso si esta en proceso
     {
         return activeCoroutines.ContainsKey(queso);
     }
@@ -22,17 +22,17 @@ public class CheeseCatcher : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         var queso = other.gameObject.GetComponent<Queso>();
-        if (queso != null && !activeCoroutines.ContainsKey(other.gameObject))
+        if (queso != null && !activeCoroutines.ContainsKey(other.gameObject))//verifica so esta el queso
         {
-            // Obtener el último índice o empezar desde 0
-            int startIndex = currentSpriteIndices.TryGetValue(other.gameObject, out int idx) ? idx : 0;
+            //empixa a inicira la corrutina de los spirtes
+             int startIndex = currentSpriteIndices.TryGetValue(other.gameObject, out int idx) ? idx : 0;
 
             Coroutine coroutine = StartCoroutine(AcopleQueso(other.gameObject, startIndex));
             activeCoroutines.Add(other.gameObject, coroutine);
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    private void OnTriggerExit2D(Collider2D other) // sirve para parpar el porceso cudo salga
     {
         var queso = other.gameObject.GetComponent<Queso>();
         if (queso != null && activeCoroutines.ContainsKey(other.gameObject))
@@ -43,13 +43,13 @@ public class CheeseCatcher : MonoBehaviour
 
     public void StopProcessingQueso(GameObject queso)
     {
-        if (activeCoroutines.TryGetValue(queso, out Coroutine coroutine))
+        if (activeCoroutines.TryGetValue(queso, out Coroutine coroutine)) //cancela todo el piorceso
         {
             StopCoroutine(coroutine);
             activeCoroutines.Remove(queso);
             queso.transform.SetParent(null);
 
-            // Destruir partículas
+            // destryte partículas
             foreach (Transform child in queso.transform)
             {
                 if (child.gameObject.layer == LayerMask.NameToLayer("ParticleEffect"))
@@ -66,38 +66,33 @@ public class CheeseCatcher : MonoBehaviour
         float originalDrag = 0;
         if (rb != null)
         {
-            rb.linearVelocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero; //detiene su movimiento
             rb.linearDamping = 50f;
         }
             
 
-        queso.transform.position = cheeseHoldPoint.position;
+        queso.transform.position = cheeseHoldPoint.position; //mueve a un punto x
         queso.transform.SetParent(cheeseHoldPoint);
 
         SpriteRenderer Sr = queso.GetComponent<SpriteRenderer>();
-        if (Sr != null && cheeseSprites.Length > 0)
+        if (Sr != null && cheeseSprites.Length > 0) //empieza el cambio de spirte paso a paso
         {
-            // Comenzar desde el último índice guardado
+            
             for (int i = startIndex; i < cheeseSprites.Length; i++)
             {
-                // Actualizar el índice actual
+                //pone un nuevo sprite
                 currentSpriteIndices[queso] = i;
                 Sr.sprite = cheeseSprites[i];
 
-                GameObject particuleInstance = null;
+                GameObject particuleInstance = null; //iNstancia las particulas
                 if (particuleSystem != null)
                 {
                     Quaternion RotationParticule = Quaternion.Euler(-180f, 90f, 0f);
-                    particuleInstance = Instantiate(
-                        particuleSystem,
-                        queso.transform.position,
-                        RotationParticule,
-                        queso.transform
-                    );
+                    particuleInstance = Instantiate(particuleSystem,queso.transform.position,RotationParticule,queso.transform);
                     particuleInstance.layer = LayerMask.NameToLayer("ParticleEffect");
                 }
 
-                yield return new WaitForSeconds(particuleTime);
+                yield return new WaitForSeconds(particuleTime);// hace un timepo de espera
 
                 if (particuleInstance != null)
                 {
@@ -108,14 +103,15 @@ public class CheeseCatcher : MonoBehaviour
                 if (remainingDelay > 0) yield return new WaitForSeconds(remainingDelay);
             }
 
-            // Al completar todos los sprites
+          
             currentSpriteIndices.Remove(queso);
             Destroy(queso);
+            //lo destruye y lo saca del diccionario
            
         }
-        if (rb = null)
+        if (rb != null)
         {
-            rb.linearDamping = originalDrag;
+            rb.linearDamping = originalDrag;// restaura el orinal drag porque es para ralentizar
         }
         activeCoroutines.Remove(queso);
     }
