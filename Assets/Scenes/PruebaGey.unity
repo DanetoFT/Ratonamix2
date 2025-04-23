@@ -397,6 +397,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+<<<<<<< HEAD
 --- !u!1 &877019174
 GameObject:
   m_ObjectHideFlags: 0
@@ -572,6 +573,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5073bc85c86c00439fdbb130f864901, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+=======
+>>>>>>> 685dbc9 (Navmesh)
 --- !u!1 &909179460
 GameObject:
   m_ObjectHideFlags: 0
@@ -2024,6 +2027,63 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1001 &1285580339193906893
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6010858793553315454, guid: ab512fe278da00c48be1338645540721, type: 3}
+      propertyPath: m_Name
+      value: Quesito
+      objectReference: {fileID: 0}
+    - target: {fileID: 8926041705805192571, guid: ab512fe278da00c48be1338645540721, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.13000011
+      objectReference: {fileID: 0}
+    - target: {fileID: 8926041705805192571, guid: ab512fe278da00c48be1338645540721, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.3290002
+      objectReference: {fileID: 0}
+    - target: {fileID: 8926041705805192571, guid: ab512fe278da00c48be1338645540721, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8926041705805192571, guid: ab512fe278da00c48be1338645540721, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.719654
+      objectReference: {fileID: 0}
+    - target: {fileID: 8926041705805192571, guid: ab512fe278da00c48be1338645540721, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8926041705805192571, guid: ab512fe278da00c48be1338645540721, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8926041705805192571, guid: ab512fe278da00c48be1338645540721, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.69433284
+      objectReference: {fileID: 0}
+    - target: {fileID: 8926041705805192571, guid: ab512fe278da00c48be1338645540721, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8926041705805192571, guid: ab512fe278da00c48be1338645540721, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8926041705805192571, guid: ab512fe278da00c48be1338645540721, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -87.948
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ab512fe278da00c48be1338645540721, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2033,6 +2093,10 @@ SceneRoots:
   - {fileID: 2011091546}
   - {fileID: 1801804124}
   - {fileID: 1156087587}
+<<<<<<< HEAD
   - {fileID: 877019177}
   - {fileID: 938820637}
   - {fileID: 91212352}
+=======
+  - {fileID: 1285580339193906893}
+>>>>>>> 685dbc9 (Navmesh)
