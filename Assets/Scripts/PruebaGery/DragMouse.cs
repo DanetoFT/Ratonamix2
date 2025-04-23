@@ -14,39 +14,39 @@ public class DragMouse : MonoBehaviour
 
     private void Start()
     {
-        catcher = FindAnyObjectByType<CheeseCatcher>();
+        catcher = FindAnyObjectByType<CheeseCatcher>();// busca el scpirt y lo guarda
     }
 
     private void FixedUpdate()
     {
         if (Rb)
         {
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mousePos.z = 0;
-            Vector3 direction = (mousePos - Rb.transform.position);
-            float effectiveForce = catcher.IsProcessing(Rb.gameObject) ? force * catcher.dragResistance : force;
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);//calcula la posicion del mouse en el mundo
+            mousePos.z = 0;// no lo queremos es 2D
+            Vector3 direction = (mousePos - Rb.transform.position);// calcula la direccion desde el onjeto hast el mouse
+            float effectiveForce = catcher.IsProcessing(Rb.gameObject) ? force * catcher.dragResistance : force;//aplica un a fuerza basada en la sirrecion, fuerza y si chater esta ejecutandose.DragResintance es para hacer resisitencia en cuando lo cojes del queso pero todavia no funciona
             Rb.linearVelocity = direction * effectiveForce * Time.fixedDeltaTime;
         }
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0)) //si haces click
         {
-            Rb = GetRigidbodyFromMouseClick();
+            Rb = GetRigidbodyFromMouseClick(); // guarmos el rigi
             if (Rb != null && catcher != null)
             {
-                catcher.StopProcessingQueso(Rb.gameObject);
+                catcher.StopProcessingQueso(Rb.gameObject);//se detenie el proceso que este haciendo cheeschater
             }
         }
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0))//si se suelta el click
         {
-            // Congela la posición al soltar
+            
             if (Rb != null)
             {
-                Rb.linearVelocity = Vector2.zero;
+                Rb.linearVelocity = Vector2.zero; //en estas lineas le quita velocidad y rotacion
                 Rb.angularVelocity = 0f;
-                Rb.Sleep(); // Opcional: Detiene cálculos físicos
+                Rb.Sleep(); // Lo duerme entre comillas para que no se procese fisicamenet y hacer asi q siga moviendose
             }
             Rb = null;
         }
@@ -54,10 +54,10 @@ public class DragMouse : MonoBehaviour
 
     private Rigidbody2D GetRigidbodyFromMouseClick()
     {
-        Vector2 clickPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        RaycastHit2D hit = Physics2D.Raycast(clickPoint, Vector2.zero, Mathf.Infinity, draggable);
+        Vector2 clickPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);// tu clicl se convierte en un posicion 2d en el mundo
+        RaycastHit2D hit = Physics2D.Raycast(clickPoint, Vector2.zero, Mathf.Infinity, draggable); //el raycast sirve para detectar si hay un colidder en la capa dragable y
 
-        if (hit.collider != null)
+        if (hit.collider != null) // si ecuntra o hit algo  devuelve el Rb
         {
             return hit.collider.GetComponent<Rigidbody2D>();
         }
