@@ -5,7 +5,7 @@ using NavMeshPlus.Extensions;
 
 public class Ratoncillo : MonoBehaviour
 {
-    [SerializeField] Transform target;
+    public Transform target;
 
     private Transform mouseTransform;
 
@@ -19,11 +19,16 @@ public class Ratoncillo : MonoBehaviour
 
     public float rotationSpeed;
 
+    public bool mouseMove;
+    public NavMeshAgent navMeshMouse;
+
     public bool canRotate;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        canRotate = false;
+        mouseMove = false;
         canRotate = true;
         rb = GetComponent<Rigidbody2D>();
         agent = GetComponent<NavMeshAgent>();
