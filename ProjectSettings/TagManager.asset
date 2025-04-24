@@ -12,6 +12,10 @@ TagManager:
   - Water
   - UI
   - ParticleEffect
+<<<<<<< HEAD
+  - 
+=======
+>>>>>>> origin/Dani
   - 
   - 
   - 
@@ -30,13 +34,12 @@ TagManager:
   - 
   - 
   - 
+  - Mouse
+  - ParticleEffect
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - playerRat
+  - nextLevel
   m_SortingLayers:
   - name: Default
     uniqueID: 0

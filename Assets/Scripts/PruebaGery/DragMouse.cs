@@ -1,14 +1,20 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-
 
 public class DragMouse : MonoBehaviour
 {
-    public float force;
+    public float Force = 500f;
     public LayerMask draggable;
     private Rigidbody2D Rb;
     private CheeseCatcher catcher;
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+    private void Start()
+    {
+        catcher = FindObjectOfType<CheeseCatcher>();
+=======
+=======
+>>>>>>> origin/Dani
     private Transform queso;
     [SerializeField] private Ratoncillo raton;
     
@@ -18,17 +24,20 @@ public class DragMouse : MonoBehaviour
     {
         catcher = FindAnyObjectByType<CheeseCatcher>();
         queso = FindAnyObjectByType<Queso>().transform;
+<<<<<<< HEAD
+>>>>>>> 63218ef (Raton no se mueve hasta que toques algÃºn objeto)
+=======
+>>>>>>> origin/Dani
     }
 
     private void FixedUpdate()
     {
-        if (Rb)
+        if (Rb != null && Rb.bodyType == RigidbodyType2D.Dynamic)
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
             Vector3 direction = (mousePos - Rb.transform.position);
-            float effectiveForce = catcher.IsProcessing(Rb.gameObject) ? force * catcher.dragResistance : force;
-            Rb.linearVelocity = direction * effectiveForce * Time.fixedDeltaTime;
+            Rb.velocity = direction * Force * Time.fixedDeltaTime;
         }
     }
 
@@ -46,12 +55,10 @@ public class DragMouse : MonoBehaviour
         }
         if (Input.GetMouseButtonUp(0))
         {
-            // Congela la posición al soltar
             if (Rb != null)
             {
-                Rb.linearVelocity = Vector2.zero;
+                Rb.velocity = Vector2.zero;
                 Rb.angularVelocity = 0f;
-                Rb.Sleep(); // Opcional: Detiene cálculos físicos
             }
             Rb = null;
         }
@@ -61,11 +68,6 @@ public class DragMouse : MonoBehaviour
     {
         Vector2 clickPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(clickPoint, Vector2.zero, Mathf.Infinity, draggable);
-
-        if (hit.collider != null)
-        {
-            return hit.collider.GetComponent<Rigidbody2D>();
-        }
-        return null;
+        return hit.collider?.GetComponent<Rigidbody2D>();
     }
 }

@@ -9,12 +9,22 @@ public class CheeseCatcher : MonoBehaviour
     public float spriteChangeDelay;
     public float particuleTime;
     public GameObject particuleSystem;
-    public float dragResistance = 0.5f;
+
+    Ratoncillo raton;
 
     Ratoncillo raton;
 
     private Dictionary<GameObject, Coroutine> activeCoroutines = new Dictionary<GameObject, Coroutine>();
-    private Dictionary<GameObject, int> currentSpriteIndices = new Dictionary<GameObject, int>(); // Nuevo: Guarda el índice actual
+    private Dictionary<GameObject, int> currentSpriteIndices = new Dictionary<GameObject, int>();
+    private Dictionary<GameObject, RigidbodyType2D> initialBodyTypes = new Dictionary<GameObject, RigidbodyType2D>();
+
+<<<<<<< HEAD
+    public Dictionary<GameObject, int> CurrentSpriteIndices => currentSpriteIndices;
+=======
+    private void Start()
+    {
+        raton = FindFirstObjectByType<Ratoncillo>();
+    }
 
     private void Start()
     {
@@ -25,6 +35,7 @@ public class CheeseCatcher : MonoBehaviour
     {
         return activeCoroutines.ContainsKey(queso);
     }
+>>>>>>> 685dbc9 (Navmesh)
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -32,9 +43,7 @@ public class CheeseCatcher : MonoBehaviour
         var queso = other.gameObject.GetComponent<Queso>();
         if (queso != null && !activeCoroutines.ContainsKey(other.gameObject))
         {
-            // Obtener el último índice o empezar desde 0
             int startIndex = currentSpriteIndices.TryGetValue(other.gameObject, out int idx) ? idx : 0;
-
             Coroutine coroutine = StartCoroutine(AcopleQueso(other.gameObject, startIndex));
             activeCoroutines.Add(other.gameObject, coroutine);
         }
@@ -58,7 +67,13 @@ public class CheeseCatcher : MonoBehaviour
             activeCoroutines.Remove(queso);
             queso.transform.SetParent(null);
 
-            // Destruir partículas
+            if (initialBodyTypes.TryGetValue(queso, out RigidbodyType2D initialType))
+            {
+                Rigidbody2D rb = queso.GetComponent<Rigidbody2D>();
+                if (rb != null) rb.bodyType = initialType;
+                initialBodyTypes.Remove(queso);
+            }
+
             foreach (Transform child in queso.transform)
             {
                 if (child.gameObject.layer == LayerMask.NameToLayer("ParticleEffect"))
@@ -72,11 +87,11 @@ public class CheeseCatcher : MonoBehaviour
     IEnumerator AcopleQueso(GameObject queso, int startIndex)
     {
         Rigidbody2D rb = queso.GetComponent<Rigidbody2D>();
-        float originalDrag = 0;
         if (rb != null)
         {
-            rb.linearVelocity = Vector2.zero;
-            rb.linearDamping = 50f;
+            initialBodyTypes[queso] = rb.bodyType;
+            rb.bodyType = RigidbodyType2D.Kinematic;
+            rb.velocity = Vector2.zero;
         }
 
         //transform.position = queso.transform.position;
@@ -86,10 +101,8 @@ public class CheeseCatcher : MonoBehaviour
         SpriteRenderer Sr = queso.GetComponent<SpriteRenderer>();
         if (Sr != null && cheeseSprites.Length > 0)
         {
-            // Comenzar desde el último índice guardado
             for (int i = startIndex; i < cheeseSprites.Length; i++)
             {
-                // Actualizar el índice actual
                 currentSpriteIndices[queso] = i;
                 Sr.sprite = cheeseSprites[i];
 
@@ -108,24 +121,20 @@ public class CheeseCatcher : MonoBehaviour
 
                 yield return new WaitForSeconds(particuleTime);
 
-                if (particuleInstance != null)
-                {
-                    Destroy(particuleInstance);
-                }
+                if (particuleInstance != null) Destroy(particuleInstance);
 
                 float remainingDelay = spriteChangeDelay - particuleTime;
                 if (remainingDelay > 0) yield return new WaitForSeconds(remainingDelay);
             }
 
-            // Al completar todos los sprites
-            currentSpriteIndices.Remove(queso);
+            if (rb != null && initialBodyTypes.ContainsKey(queso))
+            {
+                rb.bodyType = initialBodyTypes[queso];
+                initialBodyTypes.Remove(queso);
+            }
             Destroy(queso);
-           
         }
-        if (rb = null)
-        {
-            rb.linearDamping = originalDrag;
-        }
+        currentSpriteIndices.Remove(queso);
         activeCoroutines.Remove(queso);
     }
 }
