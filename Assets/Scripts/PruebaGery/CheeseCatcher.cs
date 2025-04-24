@@ -12,6 +12,8 @@ public class CheeseCatcher : MonoBehaviour
 
     Ratoncillo raton;
 
+    Ratoncillo raton;
+
     private Dictionary<GameObject, Coroutine> activeCoroutines = new Dictionary<GameObject, Coroutine>();
     private Dictionary<GameObject, int> currentSpriteIndices = new Dictionary<GameObject, int>();
     private Dictionary<GameObject, RigidbodyType2D> initialBodyTypes = new Dictionary<GameObject, RigidbodyType2D>();
@@ -19,6 +21,11 @@ public class CheeseCatcher : MonoBehaviour
 <<<<<<< HEAD
     public Dictionary<GameObject, int> CurrentSpriteIndices => currentSpriteIndices;
 =======
+    private void Start()
+    {
+        raton = FindFirstObjectByType<Ratoncillo>();
+    }
+
     private void Start()
     {
         raton = FindFirstObjectByType<Ratoncillo>();

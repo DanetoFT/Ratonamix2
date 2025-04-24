@@ -7,11 +7,14 @@ public class DragMouse : MonoBehaviour
     private Rigidbody2D Rb;
     private CheeseCatcher catcher;
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     private void Start()
     {
         catcher = FindObjectOfType<CheeseCatcher>();
 =======
+=======
+>>>>>>> origin/Dani
     private Transform queso;
     [SerializeField] private Ratoncillo raton;
     
@@ -21,7 +24,10 @@ public class DragMouse : MonoBehaviour
     {
         catcher = FindAnyObjectByType<CheeseCatcher>();
         queso = FindAnyObjectByType<Queso>().transform;
+<<<<<<< HEAD
 >>>>>>> 63218ef (Raton no se mueve hasta que toques algún objeto)
+=======
+>>>>>>> origin/Dani
     }
 
     private void FixedUpdate()

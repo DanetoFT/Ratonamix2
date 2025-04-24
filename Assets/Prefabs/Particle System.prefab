@@ -12,10 +12,14 @@ GameObject:
   - component: {fileID: 7564394141223663933}
   - component: {fileID: 2150684945729159368}
 <<<<<<< HEAD
+<<<<<<< HEAD
   m_Layer: 27
 =======
   m_Layer: 6
 >>>>>>> 685dbc9 (Navmesh)
+=======
+  m_Layer: 6
+>>>>>>> origin/Dani
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}

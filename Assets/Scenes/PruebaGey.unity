@@ -398,6 +398,7 @@ SpriteRenderer:
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
 --- !u!1 &877019174
 GameObject:
   m_ObjectHideFlags: 0
@@ -575,6 +576,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
 =======
 >>>>>>> 685dbc9 (Navmesh)
+=======
+>>>>>>> origin/Dani
 --- !u!1 &909179460
 GameObject:
   m_ObjectHideFlags: 0
@@ -2094,9 +2097,13 @@ SceneRoots:
   - {fileID: 1801804124}
   - {fileID: 1156087587}
 <<<<<<< HEAD
+<<<<<<< HEAD
   - {fileID: 877019177}
   - {fileID: 938820637}
   - {fileID: 91212352}
 =======
   - {fileID: 1285580339193906893}
 >>>>>>> 685dbc9 (Navmesh)
+=======
+  - {fileID: 1285580339193906893}
+>>>>>>> origin/Dani
