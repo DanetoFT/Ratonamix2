@@ -6,10 +6,22 @@ public class DragMouse : MonoBehaviour
     public LayerMask draggable;
     private Rigidbody2D Rb;
     private CheeseCatcher catcher;
+<<<<<<< HEAD
 
     private void Start()
     {
         catcher = FindObjectOfType<CheeseCatcher>();
+=======
+    private Transform queso;
+    [SerializeField] private Ratoncillo raton;
+    
+
+
+    private void Start()
+    {
+        catcher = FindAnyObjectByType<CheeseCatcher>();
+        queso = FindAnyObjectByType<Queso>().transform;
+>>>>>>> 63218ef (Raton no se mueve hasta que toques algún objeto)
     }
 
     private void FixedUpdate()
@@ -31,6 +43,8 @@ public class DragMouse : MonoBehaviour
             if (Rb != null && catcher != null)
             {
                 catcher.StopProcessingQueso(Rb.gameObject);
+                raton.canRotate = true;
+                raton.target = queso;
             }
         }
         if (Input.GetMouseButtonUp(0))
