@@ -9,59 +9,48 @@ public class CheeseCatcher : MonoBehaviour
     public float spriteChangeDelay;
     public float particuleTime;
     public GameObject particuleSystem;
-    public float dragResistance = 0.5f;
 
-    private Dictionary<GameObject, Coroutine> activeCoroutines = new Dictionary<GameObject, Coroutine>();// los diccionarios sirven como en este caso para poder saber si se esta procesando  y  asi poder cancelar la corrutina
-    private Dictionary<GameObject, int> currentSpriteIndices = new Dictionary<GameObject, int>(); // sirve para poder guardar los cambios del queso y asi si se cancela y se saca poder guadra en el punto que se quedo y poder retomarlo
-    private Dictionary<GameObject, float> originalDampings = new Dictionary<GameObject, float>();
+    private Dictionary<GameObject, Coroutine> activeCoroutines = new Dictionary<GameObject, Coroutine>();
+    private Dictionary<GameObject, int> currentSpriteIndices = new Dictionary<GameObject, int>();
+    private Dictionary<GameObject, RigidbodyType2D> initialBodyTypes = new Dictionary<GameObject, RigidbodyType2D>();
 
-    public bool IsProcessing (GameObject queso) // devuelve el queso si esta en proceso
-    {
-        return activeCoroutines.ContainsKey(queso);
-    }
+    public Dictionary<GameObject, int> CurrentSpriteIndices => currentSpriteIndices;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         var queso = other.gameObject.GetComponent<Queso>();
-        if (queso != null && !activeCoroutines.ContainsKey(other.gameObject))//verifica so esta el queso
+        if (queso != null && !activeCoroutines.ContainsKey(other.gameObject))
         {
-            Rigidbody2D rb = other.GetComponent<Rigidbody2D>();
-            if (rb != null)
-            {
-                if (!originalDampings.ContainsKey(other.gameObject))//guarda el valor original del drag o damping
-                {
-                    originalDampings[other.gameObject] = rb.linearDamping;
-                }
-                rb.linearDamping = 50f;//valor que de ralentizar
-            }
-            //empixa a inicira la corrutina de los spirtes
             int startIndex = currentSpriteIndices.TryGetValue(other.gameObject, out int idx) ? idx : 0;
-
             Coroutine coroutine = StartCoroutine(AcopleQueso(other.gameObject, startIndex));
             activeCoroutines.Add(other.gameObject, coroutine);
         }
-        
-      
     }
 
-    private void OnTriggerExit2D(Collider2D other) // sirve para parpar el porceso cudo salga
+    private void OnTriggerExit2D(Collider2D other)
     {
         var queso = other.gameObject.GetComponent<Queso>();
         if (queso != null && activeCoroutines.ContainsKey(other.gameObject))
         {
-            StopProcessingQueso(other.gameObject); 
+            StopProcessingQueso(other.gameObject);
         }
     }
 
     public void StopProcessingQueso(GameObject queso)
     {
-        if (activeCoroutines.TryGetValue(queso, out Coroutine coroutine)) //cancela todo el piorceso
+        if (activeCoroutines.TryGetValue(queso, out Coroutine coroutine))
         {
             StopCoroutine(coroutine);
             activeCoroutines.Remove(queso);
             queso.transform.SetParent(null);
 
-            // destryte partículas
+            if (initialBodyTypes.TryGetValue(queso, out RigidbodyType2D initialType))
+            {
+                Rigidbody2D rb = queso.GetComponent<Rigidbody2D>();
+                if (rb != null) rb.bodyType = initialType;
+                initialBodyTypes.Remove(queso);
+            }
+
             foreach (Transform child in queso.transform)
             {
                 if (child.gameObject.layer == LayerMask.NameToLayer("ParticleEffect"))
@@ -70,12 +59,6 @@ public class CheeseCatcher : MonoBehaviour
                 }
             }
         }
-        Rigidbody2D rb = queso.GetComponent<Rigidbody2D>();
-        if (rb != null && originalDampings.ContainsKey(queso)) //vuelve el valor orignal del drag a 0
-        {
-            rb.linearDamping = originalDampings[queso];
-            originalDampings.Remove(queso);//elimina el quso del diccionario
-        }
     }
 
     IEnumerator AcopleQueso(GameObject queso, int startIndex)
@@ -83,58 +66,51 @@ public class CheeseCatcher : MonoBehaviour
         Rigidbody2D rb = queso.GetComponent<Rigidbody2D>();
         if (rb != null)
         {
-            if (!originalDampings.ContainsKey(queso))
-            {
-                originalDampings[queso] = rb.linearDamping;
-            }
-            rb.linearVelocity = Vector2.zero;
-            rb.linearDamping = 50f;//srivve para ralentizar cuan
+            initialBodyTypes[queso] = rb.bodyType;
+            rb.bodyType = RigidbodyType2D.Kinematic;
+            rb.velocity = Vector2.zero;
         }
 
-
-        queso.transform.position = cheeseHoldPoint.position; //mueve a un punto x
+        queso.transform.position = cheeseHoldPoint.position;
         queso.transform.SetParent(cheeseHoldPoint);
 
         SpriteRenderer Sr = queso.GetComponent<SpriteRenderer>();
-        if (Sr != null && cheeseSprites.Length > 0) //empieza el cambio de spirte paso a paso
+        if (Sr != null && cheeseSprites.Length > 0)
         {
-            
             for (int i = startIndex; i < cheeseSprites.Length; i++)
             {
-                //pone un nuevo sprite
                 currentSpriteIndices[queso] = i;
                 Sr.sprite = cheeseSprites[i];
 
-                GameObject particuleInstance = null; //iNstancia las particulas
+                GameObject particuleInstance = null;
                 if (particuleSystem != null)
                 {
                     Quaternion RotationParticule = Quaternion.Euler(-180f, 90f, 0f);
-                    particuleInstance = Instantiate(particuleSystem,queso.transform.position,RotationParticule,queso.transform);
+                    particuleInstance = Instantiate(
+                        particuleSystem,
+                        queso.transform.position,
+                        RotationParticule,
+                        queso.transform
+                    );
                     particuleInstance.layer = LayerMask.NameToLayer("ParticleEffect");
                 }
 
-                yield return new WaitForSeconds(particuleTime);// hace un timepo de espera
+                yield return new WaitForSeconds(particuleTime);
 
-                if (particuleInstance != null)
-                {
-                    Destroy(particuleInstance);
-                }
+                if (particuleInstance != null) Destroy(particuleInstance);
 
                 float remainingDelay = spriteChangeDelay - particuleTime;
                 if (remainingDelay > 0) yield return new WaitForSeconds(remainingDelay);
             }
 
-          
-            currentSpriteIndices.Remove(queso);
-            if (originalDampings.ContainsKey(queso))
+            if (rb != null && initialBodyTypes.ContainsKey(queso))
             {
-                originalDampings.Remove(queso);
+                rb.bodyType = initialBodyTypes[queso];
+                initialBodyTypes.Remove(queso);
             }
             Destroy(queso);
-            //lo destruye y lo saca del diccionario
-           
         }
-        
+        currentSpriteIndices.Remove(queso);
         activeCoroutines.Remove(queso);
     }
 }
