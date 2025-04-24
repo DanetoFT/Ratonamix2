@@ -19,11 +19,12 @@ public class DragMouse : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Rb)
+        if (Rb != null)
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);//calcula la posicion del mouse en el mundo
             mousePos.z = 0;// no lo queremos es 2D
             Vector3 direction = (mousePos - Rb.transform.position);// calcula la direccion desde el onjeto hast el mouse
+
             float effectiveForce = catcher.IsProcessing(Rb.gameObject) ? force * catcher.dragResistance : force;//aplica un a fuerza basada en la sirrecion, fuerza y si chater esta ejecutandose.DragResintance es para hacer resisitencia en cuando lo cojes del queso pero todavia no funciona
             Rb.linearVelocity = direction * effectiveForce * Time.fixedDeltaTime;
         }

@@ -25,21 +25,23 @@ public class CheeseCatcher : MonoBehaviour
         var queso = other.gameObject.GetComponent<Queso>();
         if (queso != null && !activeCoroutines.ContainsKey(other.gameObject))//verifica so esta el queso
         {
+            Rigidbody2D rb = other.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                if (!originalDampings.ContainsKey(other.gameObject))//guarda el valor original del drag o damping
+                {
+                    originalDampings[other.gameObject] = rb.linearDamping;
+                }
+                rb.linearDamping = 50f;//valor que de ralentizar
+            }
             //empixa a inicira la corrutina de los spirtes
-             int startIndex = currentSpriteIndices.TryGetValue(other.gameObject, out int idx) ? idx : 0;
+            int startIndex = currentSpriteIndices.TryGetValue(other.gameObject, out int idx) ? idx : 0;
 
             Coroutine coroutine = StartCoroutine(AcopleQueso(other.gameObject, startIndex));
             activeCoroutines.Add(other.gameObject, coroutine);
         }
-        Rigidbody2D rb = other.GetComponent<Rigidbody2D>();
-        if (rb!= null)
-        {
-            if (!originalDampings.ContainsKey(other.gameObject))//guarda el valor original del drag o damping
-            {
-                originalDampings[other.gameObject] = rb.linearDamping;
-            }
-            rb.linearDamping = 50f;//valor que de ralentizar
-        }
+        
+      
     }
 
     private void OnTriggerExit2D(Collider2D other) // sirve para parpar el porceso cudo salga
